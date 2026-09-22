@@ -13,7 +13,8 @@ export function useRealtime() {
   const lastJsonRef = useRef<string>('')
 
   const stableSetState = useCallback((s: any) => {
-    const json = JSON.stringify(s)
+    const { insights_now: _a, insights: _b, logs: _c, notifications: _d, ...core } = s
+    const json = JSON.stringify(core)
     if (json !== lastJsonRef.current) {
       lastJsonRef.current = json
       setState(s)
@@ -54,7 +55,7 @@ export function useRealtime() {
           refresh()
         } else {
           pushEvent({ ...data, at: new Date().toLocaleTimeString() })
-          if (data.type && data.type !== 'pong') refresh()
+          if (data.type && data.type !== 'pong' && data.type !== 'clock') refresh()
         }
       }
       ws.onclose = () => {
