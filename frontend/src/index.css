@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root { height: 100%; }
+  body {
+    @apply bg-ink-50 text-ink-800 antialiased font-sans;
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { @apply bg-ink-200 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-ink-300; }
+}
+
+@layer components {
+  .card { @apply bg-white rounded-2xl shadow-card border border-ink-100; }
+  .card-hover { @apply transition hover:shadow-pop hover:-translate-y-0.5; }
+
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition active:scale-[.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100; }
+  .btn-primary { @apply btn bg-brand-600 text-white hover:bg-brand-700 shadow-sm shadow-brand-600/20; }
+  .btn-ghost { @apply btn bg-white text-ink-700 border border-ink-200 hover:bg-ink-50 hover:border-ink-300; }
+  .btn-danger { @apply btn bg-rose-600 text-white hover:bg-rose-700 shadow-sm shadow-rose-600/20; }
+  .btn-amber { @apply btn bg-amber-500 text-white hover:bg-amber-600 shadow-sm shadow-amber-500/20; }
+  .btn-outline-brand { @apply btn bg-white text-brand-700 border border-brand-200 hover:bg-brand-50 hover:border-brand-300; }
+
+  .input { @apply w-full rounded-xl border border-ink-200 bg-white px-3.5 py-2.5 text-sm text-ink-800 placeholder-ink-400 focus:outline-none focus:ring-4 focus:ring-brand-500/15 focus:border-brand-400 transition; }
+  .label { @apply block text-[11px] font-bold uppercase tracking-wider text-ink-400 mb-1.5; }
+
+  .badge { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold; }
+  .th { @apply px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-ink-400; }
+  .td { @apply px-4 py-3 text-sm text-ink-700; }
+
+  .nav-pill { @apply relative px-4 py-2 text-sm font-semibold rounded-lg transition; }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
