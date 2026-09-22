@@ -10,6 +10,15 @@ export function useRealtime() {
   const [connected, setConnected] = useState(false)
   const [events, setEvents] = useState<any[]>([])
   const wsRef = useRef<WebSocket | null>(null)
+  const lastJsonRef = useRef<string>('')
+
+  const stableSetState = useCallback((s: any) => {
+    const json = JSON.stringify(s)
+    if (json !== lastJsonRef.current) {
+      lastJsonRef.current = json
+      setState(s)
+    }
+  }, [])
 
   const pushEvent = useCallback((e: any) => {
     setEvents((prev) => [e, ...prev].slice(0, 60))
@@ -20,9 +29,9 @@ export function useRealtime() {
     const token = localStorage.getItem('care_token')
     fetch(BASE_URL + '/api/state', { headers: { Authorization: 'Bearer ' + (token || '') } })
       .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-      .then((s) => setState(s))
+      .then((s) => stableSetState(s))
       .catch(() => {})
-  }, [])
+  }, [stableSetState])
 
   useEffect(() => {
     let closed = false
@@ -39,7 +48,7 @@ export function useRealtime() {
         let data: any
         try { data = JSON.parse(msg.data) } catch { return }
         if (data.type === 'snapshot') {
-          if (data.state) setState(data.state)
+          if (data.state) stableSetState(data.state)
           else refresh()
         } else if (data.type === 'state_refresh') {
           refresh()
