@@ -1,0 +1,32 @@
+# Version control & docs
+.git
+.gitignore
+.github
+*.md
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Frontend build inputs that are regenerated / not needed in the image
+frontend/node_modules
+frontend/dist
+frontend/.vite
+
+# Datastore + local secrets (the real datastore lives in the /data volume)
+backend/data
+*.xlsx
+.env
+.env.*
+*.log
+*.pid
+
+# OS cruft
+.DS_Store
+Thumbs.db

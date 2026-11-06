@@ -1,0 +1,26 @@
+# Hosted evaluation demo: the same container as docker-compose.yml, on synthetic
+# data. The filesystem is not persistent, so the demo workbook is rebuilt whenever
+# the service restarts, which is what a demo wants.
+services:
+  - type: web
+    name: oncocare-demo
+    runtime: docker
+    plan: starter
+    region: singapore
+    healthCheckPath: /health
+    autoDeploy: false
+    envVars:
+      # Render passes this to the Docker build. It shows evaluators the Ops
+      # Console, where they can trigger the disruptions themselves.
+      - key: VITE_DEMO
+        value: "true"
+      - key: TZ
+        value: Asia/Kolkata
+      - key: CARE_NOW
+        value: "11:30"
+      - key: CARE_DEMO_REFRESH
+        value: "true"
+      - key: CARE_SECRET
+        generateValue: true
+      - key: CARE_SARVAM_KEY
+        sync: false

@@ -1,0 +1,69 @@
+# DataMan OncoCare — one container, no .env required.
+#
+#   docker compose up --build      # then open http://localhost:8000
+#
+# The app self-configures: if CARE_SECRET is not set, it derives and persists
+# a stable secret into the /data volume, so logins keep working across
+# restarts. Override CARE_SECRET (and any other CARE_* var) to customize.
+services:
+  oncocare:
+    build:
+      context: .
+      args:
+        VITE_DEMO: "false"
+    image: dataman-oncocare:latest
+    ports:
+      - "8000:8000"
+    environment:
+      # The department clock — "now"/"today", the timeline's now-marker, and the
+      # watchdog's no-show / overrun triggers — follows the container's local
+      # time. Without this it is UTC, which runs the whole demo hours behind.
+      TZ: "Asia/Kolkata"
+      # The demo clock, pinned. The seeded workbook plays today out to 11:30 —
+      # visits done, patients in chairs, one treatment held for results, an
+      # afternoon still to run — so the clock has to agree with it. Without
+      # this the app shows whatever hour you happen to open it at, which after
+      # 14:00 is an empty clinic and before 08:30 is an idle one.
+      #
+      # Comment it out to let the clock follow real time. Nothing breaks: the
+      # watchdog never no-shows a patient who has checked in or whose
+      # treatment is held for results.
+      CARE_NOW: "11:30"
+      # Rebuild the demo workbook whenever the day it was seeded around has
+      # passed. Everything in the seed — two finished days, a half-played
+      # today, two booked days ahead — is relative to one anchor date, so a
+      # workbook left running for two days becomes a clinic where the
+      # watchdog has marked every patient absent. Off by default in the code,
+      # because in a real clinic this would delete the clinic's records; on
+      # here, because this container is the demo.
+      CARE_DEMO_REFRESH: "true"
+      # Sarvam AI for the assistant, read from .env. Empty means off: the phrase
+      # matcher answers and nothing leaves the machine.
+      CARE_SARVAM_KEY: "${CARE_SARVAM_KEY:-}"
+    # Other optional overrides — all have working defaults. Add them above:
+    #   CARE_SECRET: "paste-a-long-random-hex-here"   # recommended in production
+    #   CARE_CORS_ORIGINS: "http://localhost:8000"
+    #   CARE_TOKEN_TTL_MIN: "480"
+    #
+    # Messaging. With none of these set, messages go to the application log
+    # and the whole flow still runs — that is the default on purpose.
+    # Set both WhatsApp vars to send through the Cloud API instead:
+    #   CARE_WHATSAPP_TOKEN: "paste-the-access-token"
+    #   CARE_WHATSAPP_PHONE_ID: "paste-the-phone-number-id"
+    #   CARE_DEFAULT_COUNTRY_CODE: "91"               # for locally-typed numbers
+    # Or point at a gateway the hospital already pays for:
+    #   CARE_SMS_WEBHOOK: "https://gateway.example/send"
+    #   CARE_SMS_TOKEN: "bearer-token-for-that-gateway"
+    volumes:
+      # Persists the Excel datastore + the auto-derived secret across restarts.
+      - oncocare-data:/data
+    restart: unless-stopped
+    # Resource guards for a laptop-sized demo (raise for real use).
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 1g
+
+volumes:
+  oncocare-data:
