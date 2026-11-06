@@ -1,0 +1,9 @@
+# The Phase 1 submission points at dataman-oncocare.pages.dev, but Cloudflare
+# Pages serves static files only: it has no /api and no WebSocket, so the app
+# cannot sign anyone in from here. The whole app - frontend, API and /ws - runs
+# on one origin on Render, so forward every path there and keep the submitted
+# link working.
+#
+# 302, not 301: a permanent redirect gets cached by browsers and would be hard
+# to undo if the backend ever moves.
+/*    https://dataman-oncocare.onrender.com/:splat    302
